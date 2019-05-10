@@ -1,11 +1,12 @@
 Package: jdcov
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
+Title: Tests for joint independence among d(>=2) random vectors of arbitrary dimensions via joint distance covariance
+Version: 1.0.0
 Date: 2019-05-09
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Author: c(person("Shubhadeep","Chakraborty", email="shubhadeep_stat@yahoo.in", role=c("aut","cre")), person("Dongbang","Yuan", email="yuandb@stat.tamu.edu", role=c("aut","cre")), person("Xianyang","Zhang", email="zhangxiany@stat.tamu.edu", role="aut"))
+Maintainer: Shubhadeep Chakraborty <shubhadeep_stat@yahoo.in>
+Description: High order distance covariances and joint distance covariance (see Chakraborty and Zhang, 2019) to quantify the joint dependence among d(>=2) random vectors of arbitrary dimensions are implemented.
 License: GPL-3
-Imports: Rcpp (>= 1.0.1)
+Imports: stats, Rcpp (>= 1.0.1)
 LinkingTo: Rcpp, RcppArmadillo
+RoxygenNote: 6.1.1

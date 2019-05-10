@@ -1,3 +1,4 @@
 useDynLib(jdcov, .registration=TRUE)
+importFrom("stats", "dist", "ecdf", "quantile")
 importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")
