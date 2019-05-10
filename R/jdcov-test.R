@@ -1,18 +1,57 @@
-## JdCov.test : performs a bootstrap based test for joint independence of d random vectors 
-## X_1, .. , X_d with dimensions p_1, .. , p_d, given in Section 4 in Chakraborty and Zhang (2019).
+#' Title  Test for joint independence based on joint distance covariance
+#' 
+#' performs a bootstrap based test for joint independence of d random vectors 
+#' X_1, .. , X_d with dimensions p_1, .. , p_d, given in Section 4 in Chakraborty and Zhang (2019).
+#'
+#' @param x a list of d (>=2) elements, the i^th element being a numeric n*p_i data matrix for the random vector 
+#'    X_i, i=1,..,d. n denotes the sample size and p_i denotes the dimension of the i^th random vector X_i.
+#' @param cc a choice for the tuning parameter c, default is 1.
+#' @param B an integer value specifying the number of bootstrap replicates to be considered, default is 100.
+#' @param stat.type a character string specifying the type of the estimator of joint distance covariance 
+#'                   to be computed. The available options are : "V" (the V-statistic type estimator), 
+#'                   "U" (the U-statistic type estimator), "US" (the scale invariant U-statistic type estimator),
+#'                  "Rank V" (the rank based V-statistic type estimator) and "Rank U" (the rank based U-statistic
+#'                   type estimator). Default is "U".
+#' @param alpha a numeric value specifying the level of the test, default is 0.05.
+#'
+#' @return A list containing the following components :
+#' statistic   the value of the test statistic
+#' 
+#' crit.value  critical value of the bootstrap-based hypothesis test. The null hypothesis (H_0: joint 
+#' independence) is rejected if the value of the statistic is greater than crit.value
+#' 
+#' p.value  p-value of the bootstrap-based hypothesis test. The null hypothesis (H_0: joint 
+#' independence) is rejected if p.value is smaller than alpha
+#' @export
+#'
+#' @examples
+#' (X_1, .. , X_d) are generated as follows : X=Z^3, where Z~N(0,diag(d)).
+#' library(mvtnorm)
+#' n=100; d=5
+#' set.seed(10)
+#' z=rmvnorm(n,mean=rep(0,d),sigma=diag(d)) ; x=z^3
+#' X <- lapply(seq_len(ncol(x)), function(i) as.matrix(x[,i]))
+#' jdcov.test(X, cc=1, B=100, stat.type = "U", alpha=0.05)
 
-## Inputs :
-## x : A list of d elements, the i^th element being the numeric n*p_i data matrix for the random vector X_i,
-##     i=1,..,d.
-## cc : A choice for the tuning parameter c (Section 2.2, Chakraborty and Zhang (2019)), default is 1.
-## B : number of bootstrap resamples, default is 100.
-## stat.type : the type of the estimator of JdCov to be used. Must be one of "V" (V-statistic type), "U" 
-## (U-statistic type), "US" (scale invariant U-statistic type), "Rank V" (rank based V-statistic type) or
-## "Rank U" (rank based U-statistic type), default is "U".
-##  alpha : level of the test, default is 0.05.
 
 
-JdCov.test <- function(x, cc=1, B=100, stat.type="U", alpha=0.05){
+#'  X, Y and Z are p-dimensional random vectors, where X, Y are i.i.d N(0, diag(p)), 
+#' Z_1 = sign(X_1 * Y_1) * W and Z_{2:p} ~ N(0, diag(p-1)), W ~ exponential(mean=sqrt(2)).
+#' n=100 ; d=3; p=5
+#' x=list() ; x[[1]]=x[[2]]=x[[3]]=matrix(0,n,p)
+#' set.seed(1)
+#' x[[1]]=rmvnorm(n,rep(0,p),diag(p)) 
+#' set.seed(2)
+#' x[[2]]=rmvnorm(n,rep(0,p),diag(p))
+#' set.seed(3)
+#' W=rexp(n,1/sqrt(2))
+#' x[[3]][,1]=(sign(x[[1]][,1] * x[[2]][,1])) * W
+#' set.seed(4)
+#' x[[3]][,2:p]=rmvnorm(n,rep(0,(p-1)),diag(p-1))
+#' jdcov.test(x, cc=1, B=100, stat.type = "U", alpha=0.05)
+
+ 
+jdcov.test <- function(x, cc=1, B=100, stat.type="U", alpha=0.05){
   
   n.sample=as.matrix(sapply(x,dim))[1,]
   if(length(unique(n.sample))!=1) stop("Unequal Sample Sizes")
@@ -82,7 +121,7 @@ JdCov.test <- function(x, cc=1, B=100, stat.type="U", alpha=0.05){
   crit <- as.numeric(quantile(stat.p, 1-alpha))
   pvalue <- (1 + sum(stat.p>=stat))/(B+1)
   
-  result=list(statistic = stat.type, value=stat, crit.value=crit, p.value= pvalue)
+  result=list(statistic=stat, crit.value=crit, p.value= pvalue)
   return(result)
 }
 
