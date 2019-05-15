@@ -49,12 +49,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// timesTwo
+NumericVector timesTwo(NumericVector x);
+RcppExport SEXP _jdcov_timesTwo(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(timesTwo(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_jdcov_rcpparma_hello_world", (DL_FUNC) &_jdcov_rcpparma_hello_world, 0},
     {"_jdcov_rcpparma_outerproduct", (DL_FUNC) &_jdcov_rcpparma_outerproduct, 1},
     {"_jdcov_rcpparma_innerproduct", (DL_FUNC) &_jdcov_rcpparma_innerproduct, 1},
     {"_jdcov_rcpparma_bothproducts", (DL_FUNC) &_jdcov_rcpparma_bothproducts, 1},
+    {"_jdcov_timesTwo", (DL_FUNC) &_jdcov_timesTwo, 1},
     {NULL, NULL, 0}
 };
 

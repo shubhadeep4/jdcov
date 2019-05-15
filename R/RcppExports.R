@@ -17,3 +17,7 @@ rcpparma_bothproducts <- function(x) {
     .Call(`_jdcov_rcpparma_bothproducts`, x)
 }
 
+timesTwo <- function(x) {
+    .Call(`_jdcov_timesTwo`, x)
+}
+
