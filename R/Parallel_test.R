@@ -1,6 +1,7 @@
+library(doParallel)
 nworkers <- detectCores()
 cl = makeCluster(nworkers)
- 
+source("R/jdcov_basic_functions.R")
 ParallelBootstrap <- function(x, B, stat.type, cl, F, cc){
   d = length(x)
   n.sample=as.matrix(sapply(x,dim))[1,]
@@ -40,8 +41,8 @@ ParallelBootstrap <- function(x, B, stat.type, cl, F, cc){
     }
     stat.p
   }
-  stopCluster(cl)
   return(output)
+  stopCluster(cl)
 }
 
 jdcov.test_parallel <- function(x, cc=1, B=100, stat.type="U", alpha=0.05){
@@ -98,12 +99,13 @@ n=100; d=5
 set.seed(10)
 z=rmvnorm(n,mean=rep(0,d),sigma=diag(d)) ; x=z^3
 X <- lapply(seq_len(ncol(x)), function(i) as.matrix(x[,i]))
-jdcov.test_parallel(X, cc=1, B=100, stat.type = "U", alpha=0.05)
 source("R/jdcov-test.R")
-jdcov.test_parallel(X, cc=1, B=100, stat.type = "U", alpha=0.05)
-proc.time()
+time1 = proc.time()
+jdcov.test_parallel(X, cc=1, B=5000, stat.type = "Rank U", alpha=0.05)
+proc.time() - time1
 
-jdcov.test(X, cc=1, B=100, stat.type = "U", alpha=0.05)
-proc.time()
+time2 = proc.time()
+jdcov.test(X, cc=1, B=5000, stat.type = "Rank U", alpha=0.05)
+proc.time() - time2
 
 
