@@ -98,12 +98,14 @@ n=100; d=5
 set.seed(10)
 z=rmvnorm(n,mean=rep(0,d),sigma=diag(d)) ; x=z^3
 X <- lapply(seq_len(ncol(x)), function(i) as.matrix(x[,i]))
-jdcov.test_parallel(X, cc=1, B=100, stat.type = "U", alpha=0.05)
 source("R/jdcov-test.R")
-jdcov.test_parallel(X, cc=1, B=100, stat.type = "U", alpha=0.05)
-proc.time()
+source("R/jdcov_basic_functions.R")
+t1<-proc.time()
+jdcov.test_parallel(X, cc=1, B=500, stat.type = "US", alpha=0.05)
+proc.time()-t1
 
-jdcov.test(X, cc=1, B=100, stat.type = "U", alpha=0.05)
-proc.time()
+t2<-proc.time()
+jdcov.test(X, cc=1, B=500, stat.type = "US", alpha=0.05)
+proc.time()-t2
 
 

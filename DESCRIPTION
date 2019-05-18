@@ -7,7 +7,7 @@ Author: as.person(c("Shubhadeep Chakraborty <shubhadeep_stat@yahoo.in> [aut, cre
 Maintainer: Shubhadeep Chakraborty <shubhadeep_stat@yahoo.in>
 Description: Computes joint distance covariance (JdCov) among more than two random vectors of arbitrary dimensions (see Chakraborty and Zhang, 2019) and implements a bootstrap based test for joint independence among the random vectors based on JdCov.
 License: GPL-3
-Imports: stats, Rcpp (>= 1.0.1)
+Imports: stats, base, Rcpp (>= 1.0.1), foreach, parallel
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 6.1.1
 References: Chakraborty, S. and Zhang, X. (2019). Distance Metrics for Measuring Joint Dependence with Application to Causal Inference, Journal of the American Statistical Association, DOI: 10.1080/01621459.2018.1513364.

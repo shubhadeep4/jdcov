@@ -21,7 +21,7 @@ The DESCRIPTION file:
 Maintainer: \packageMaintainer{jdcov}
 }
 \references{
-~~ Literature or other references for background information ~~
+Chakraborty, S. and Zhang, X. (2019). Distance Metrics for Measuring Joint Dependence with Application to Causal Inference, Journal of the American Statistical Association, DOI: 10.1080/01621459.2018.1513364.
 }
 ~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~
 \keyword{ package }
