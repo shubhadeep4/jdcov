@@ -1,5 +1,5 @@
 
-ParallelBootstrap_U <- function(x, B, stat.type, cl, F, cc){
+ParallelBootstrap_UVUS <- function(x, B, stat.type, cl, F, cc){
   
   d = length(x)
   n.sample=as.matrix(sapply(x,dim))[1,]
@@ -12,17 +12,19 @@ ParallelBootstrap_U <- function(x, B, stat.type, cl, F, cc){
     source("R/jdcov_basic_functions.R")
     x.p <- x
     stat.p = 0
-    for(j in 1:d) x.p[[j]] <- as.matrix(x[[j]][sample(1:n,n,replace=TRUE),])
     
+    for(j in 1:d) {x.p[[j]] <- as.matrix(x[[j]][sample(1:n,n,replace=TRUE),])}
     stat.p <- F(x.p,cc)
     
     stat.p
-  }
+  }  
   stopCluster(cl)
   return(output)
 }
 
-ParallelBootstrap_V <- function(x, B, stat.type, cl, F, cc){
+
+
+ParallelBootstrap_RankUV <- function(x, B, stat.type, cl, F, cc){
   
   d = length(x)
   n.sample=as.matrix(sapply(x,dim))[1,]
@@ -35,96 +37,14 @@ ParallelBootstrap_V <- function(x, B, stat.type, cl, F, cc){
     source("R/jdcov_basic_functions.R")
     x.p <- x
     stat.p = 0
-    for(j in 1:d) x.p[[j]] <- as.matrix(x[[j]][sample(1:n,n,replace=TRUE),])
-    
-    stat.p <- F(x.p,cc)
-    
+    for(j in 1:d) { x.p[[j]] <- as.matrix(x[[j]][sample(1:n,n,replace=TRUE),])}
+    x.pr <- rank_list(x.p)  ;  stat.p <- F(x.pr,cc)
     stat.p
   }
   stopCluster(cl)
   return(output)
 }
 
-ParallelBootstrap_US <- function(x, B, stat.type, cl, F, cc){
-  
-  d = length(x)
-  n.sample=as.matrix(sapply(x,dim))[1,]
-  n=n.sample[1]
-  p=as.matrix(sapply(x,dim))[2,]
-  
-  registerDoParallel(cl)
-  
-  output <- foreach(i = 1:B) %dopar% {
-    source("R/jdcov_basic_functions.R")
-    x.p <- x
-    stat.p = 0
-    for(j in 1:d) x.p[[j]] <- as.matrix(x[[j]][sample(1:n,n,replace=TRUE),])
-    
-    stat.p <- F(x.p,cc)
-    
-    stat.p
-  }
-  stopCluster(cl)
-  return(output)
-}
-
-ParallelBootstrap_RankV <- function(x, B, stat.type, cl, F, cc){
-  
-  d = length(x)
-  n.sample=as.matrix(sapply(x,dim))[1,]
-  n=n.sample[1]
-  p=as.matrix(sapply(x,dim))[2,]
-  
-  registerDoParallel(cl)
-  
-  output <- foreach(i = 1:B) %dopar% {
-    source("R/jdcov_basic_functions.R")
-    x.p <- x
-    stat.p = 0
-    
-    for(j in 1:d) {
-      x.p[[j]] <- as.matrix(x[[j]][sample(1:n,n,replace=TRUE),])
-      x.pr <-  x
-      for(l in 1:ncol(x[[j]])){
-        f.cdf <- ecdf(x.p[[j]][,l]); x.pr[[j]][,l] <- f.cdf(x.p[[j]][,l])
-      }
-    }
-    stat.p <- F(x.pr,cc)
-    
-    stat.p
-  }
-  stopCluster(cl)
-  return(output)
-}
-
-ParallelBootstrap_RankU <- function(x, B, stat.type, cl, F, cc){
-  
-  d = length(x)
-  n.sample=as.matrix(sapply(x,dim))[1,]
-  n=n.sample[1]
-  p=as.matrix(sapply(x,dim))[2,]
-  
-  registerDoParallel(cl)
-  
-  output <- foreach(i = 1:B) %dopar% {
-    source("R/jdcov_basic_functions.R")
-    x.p <- x
-    stat.p = 0
-    
-    for(j in 1:d) {
-      x.p[[j]] <- as.matrix(x[[j]][sample(1:n,n,replace=TRUE),])
-      x.pr <-  x
-      for(l in 1:ncol(x[[j]])){
-        f.cdf <- ecdf(x.p[[j]][,l]); x.pr[[j]][,l] <- f.cdf(x.p[[j]][,l])
-      }
-    }
-    stat.p <- F(x.pr,cc)
-    
-    stat.p
-  }
-  stopCluster(cl)
-  return(output)
-}
 
 
 jdcov.test_parallel_edited <- function(x, cc, B, stat.type, alpha){
@@ -139,37 +59,21 @@ jdcov.test_parallel_edited <- function(x, cc, B, stat.type, alpha){
   cl = makeCluster(nworkers)
   
   if(stat.type=="V") {F <- Jdcov.sq.V ; stat <- F(x,cc)
-  stat.p = unlist(ParallelBootstrap_V(x,B,stat.type,cl,F,cc))
+  stat.p = unlist(ParallelBootstrap_UVUS(x,B,stat.type,cl,F,cc))
   }
   if(stat.type=="U") {F <- Jdcov.sq.U ; stat <- F(x,cc)
-  stat.p = unlist(ParallelBootstrap_U(x,B,stat.type,cl,F,cc))
+  stat.p = unlist(ParallelBootstrap_UVUS(x,B,stat.type,cl,F,cc))
   }
   if(stat.type=="US"){F <- Jdcov.sq.US ; stat <- F(x,cc)
-  stat.p = unlist(ParallelBootstrap_US(x,B,stat.type,cl,F,cc))
+  stat.p = unlist(ParallelBootstrap_UVUS(x,B,stat.type,cl,F,cc))
   }
   
-  if(stat.type=="Rank V"){
-    F <- Jdcov.sq.V
-    x.r <- x
-    for(j in 1:d) {
-      for(l in 1:ncol(x[[j]])){
-        f.cdf <- ecdf(x[[j]][,l]); x.r[[j]][,l] <- f.cdf(x[[j]][,l])
-      }
-    }
-    stat <- F(x.r,cc)
-    stat.p = unlist(ParallelBootstrap_RankV(x,B,stat.type,cl,F,cc))
+  if(stat.type=="Rank V"){ F <- Jdcov.sq.V ; x.r <- rank_list(x) ; stat <- F(x.r,cc)
+    stat.p = unlist(ParallelBootstrap_RankUV(x,B,stat.type,cl,F,cc))
   } 
   
-  if(stat.type=="Rank U"){
-    F <- Jdcov.sq.U
-    x.r <- x
-    for(j in 1:d) {
-      for(l in 1:ncol(x[[j]])){
-        f.cdf <- ecdf(x[[j]][,l]); x.r[[j]][,l] <- f.cdf(x[[j]][,l])
-      }
-    }
-    stat <- F(x.r,cc)
-    stat.p = unlist(ParallelBootstrap_RankU(x,B,stat.type,cl,F,cc))
+  if(stat.type=="Rank U"){F <- Jdcov.sq.U ; x.r <- rank_list(x) ; stat <- F(x.r,cc)
+    stat.p = unlist(ParallelBootstrap_RankUV(x,B,stat.type,cl,F,cc))
   }
   
   crit <- as.numeric(quantile(stat.p, 1-alpha))
@@ -187,7 +91,6 @@ z=rmvnorm(n,mean=rep(0,d),sigma=diag(d)) ; x=z^3
 X <- lapply(seq_len(ncol(x)), function(i) as.matrix(x[,i]))
 source("R/jdcov-test.R")
 source("R/jdcov_basic_functions.R")
-source("R/Parallel_test.R")
 t1<-proc.time()
 jdcov.test_parallel(X, cc=1, B=100, stat.type = "US", alpha=0.05)
 proc.time()-t1
