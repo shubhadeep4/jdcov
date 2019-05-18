@@ -122,11 +122,11 @@ jdcov.test_parallel(X, cc=1, B=100, stat.type = "US", alpha=0.05)
 proc.time()-t1
 
 t2<-proc.time()
-jdcov.test(X, cc=1, B=100, stat.type = "US", alpha=0.05)
+jdcov.test(X, cc=1, B=1000, stat.type = "US", alpha=0.05)
 proc.time()-t2
 
 t3<-proc.time()
-jdcov.test_parallel_edited(X, cc=1, B=100, stat.type = "US", alpha=0.05)
+jdcov.test_parallel_edited(X, cc=1, B=1000, stat.type = "US", alpha=0.05)
 proc.time()-t3
 
 
