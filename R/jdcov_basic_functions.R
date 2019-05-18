@@ -118,3 +118,20 @@ Jdcov.sq.US <- function(x,cc=1){
   for(i in 2:d) A <- A*( u.center(x[[i]])/sqrt( dCov.sq.U(x[[i]],n) ) + cc )
   return( sum(A)/n/(n-3)-cc^d*n/(n-3) )
 }
+
+
+rank_list <- function(x){
+  x.r <- x
+  d=length(x)
+  for(j in 1:d) {
+    for(l in 1:ncol(x[[j]])){
+      f.cdf <- ecdf(x[[j]][,l]); x.r[[j]][,l] <- f.cdf(x[[j]][,l])
+    }
+  }
+  return(x.r)
+}
+
+
+
+
+
